@@ -42,16 +42,17 @@ const renderProduct = function(product){
 
     const btnDivWrap = createElement("div", "position-absolute top-0 end-0 d-flex", "", "");
 
-    const btnOne = createElement("button", "btn rounded-0 btn-secondary", "", "")
-    const btnOneI = createElement("i", "fa-solid fa-pen", "", "");
-    btnOne.append(btnOneI);
+    const btnEdit = createElement("button", "btn rounded-0 btn-secondary", "", "")
+    const btnEditIcon = createElement("i", "fa-solid fa-pen", "", "");
+    btnEdit.append(btnEditIcon);
 
-    const btnTWo = createElement("button", "btn rounded-0 btn-danger", "", "");
-    const btnTWoI = createElement("i", "fa-solid fa-trash");
-    btnTWo.append(btnTWoI);
+    const btnDel = createElement("button", "btn rounded-0 btn-danger", "", "");
+    const btnDelIcon = createElement("i", "fa-solid fa-trash");
+    btnDel.append(btnDelIcon);
+    btnDel.setAttribute("data-product", id);
 
-    btnDivWrap.append(btnOne);
-    btnDivWrap.append(btnTWo);
+    btnDivWrap.append(btnEdit); 
+    btnDivWrap.append(btnDel);
 
     productDivWrapper.append(productImg);
     productDivWrapper.append(productDivWrap);
@@ -77,15 +78,33 @@ const renderProduct = function(product){
     return productItem;
 }
 
+const renderProducts = function(){
+
+    productList.innerHTML = "";
+    for (i = 0; i < products.length; i++) {
+        const currentProduct = products[i]; 
+        const productItem = renderProduct(currentProduct); 
+        productList.append(productItem);
+    } 
+}
+
 const productList = document.querySelector("#manafactures");
 
-for (i = 0; i < products.length; i++) {
-    const currentProduct = products[i]; 
+productList.addEventListener("click", function(evt){
+    if (evt.target.matches(".btn-danger")){
+        const clickedItemId = +evt.target.dataset.product;
 
-    const productItem = renderProduct(currentProduct); 
-    
-    productList.append(productItem);
-} 
+        const clickedItemIndex = products.findIndex(function(product){
+            return product.id === clickedItemId
+        })
+
+        products.splice(clickedItemIndex, 1);
+
+        renderProducts();      
+    }
+})
+
+renderProducts();
 
 const addForm = document.querySelector("#add-form");
 const addProductModalEl = document.querySelector("#edit-student-modal")
@@ -95,7 +114,6 @@ const addSelect = document.querySelector("#product-manufacturer")
     const addOption = createElement("option", "", manufacturers[i].name, "")
     addSelect.append(addOption)
      console.log(addOption)
-    
 }
 
 addForm.addEventListener("submit", function(evt) {
@@ -110,9 +128,10 @@ addForm.addEventListener("submit", function(evt) {
     
     const titleValue = titleInput.value;
     const priceValue = priceInput.value;
-    const benefitsValue = benefitsInput.value.split(" ");
     const imgValue = "https://picsum.photos/300/200?random=1"; 
     const manufacturerValue = manufacturerInput.value;
+    const benefitsValue = benefitsInput.value.split(";");
+    
     
     if (titleValue.trim() && priceValue.trim()){
         const product = {
@@ -128,10 +147,11 @@ addForm.addEventListener("submit", function(evt) {
 
         addForm.reset();
         addProductModal.hide(); 
-
         const productItem = renderProduct(product); 
         productList.append(productItem);
+
     }
+  
 });
 
 
@@ -140,4 +160,4 @@ addForm.addEventListener("submit", function(evt) {
 
 
 
- 
+  
